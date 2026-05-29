@@ -1,0 +1,63 @@
+# Reference this view as ecommerce_db_public__tech_layoffs_til_2025
+catalog: ECOMMERCE_DB
+schema: PUBLIC
+table_name: TECH_LAYOFFS_TIL_2025
+
+dimensions:
+  company__tech_layoffs_til_2025_csv_:
+    sql: '"Company (tech layoffs til 2025.csv)"'
+
+  continent__tech_layoffs_til_2025_csv_:
+    sql: '"Continent (tech layoffs til 2025.csv)"'
+
+  country__tech_layoffs_til_2025_csv_:
+    sql: '"Country (tech layoffs til 2025.csv)"'
+
+  date_layoffs__tech_layoffs_til_2025_csv_:
+    sql: '"Date layoffs (tech layoffs til 2025.csv)"'
+
+  industry__tech_layoffs_til_2025_csv_:
+    sql: '"Industry (tech layoffs til 2025.csv)"'
+
+  location_hq__tech_layoffs_til_2025_csv_:
+    sql: '"Location HQ (tech layoffs til 2025.csv)"'
+
+  region__tech_layoffs_til_2025_csv_:
+    sql: '"Region (tech layoffs til 2025.csv)"'
+
+  stage__tech_layoffs_til_2025_csv_:
+    sql: '"Stage (tech layoffs til 2025.csv)"'
+
+  usstate__tech_layoffs_til_2025_csv_:
+    sql: '"USState (tech layoffs til 2025.csv)"'
+
+  year__tech_layoffs_til_2025_csv_:
+    sql: '"Year (tech layoffs til 2025.csv)"'
+
+  company_size_after_layoffs__tech_layoffs_til_2025_csv_:
+    sql: '"Company Size after layoffs (tech layoffs til 2025.csv)"'
+
+  company_size_before_layoffs__tech_layoffs_til_2025_csv_:
+    sql: '"Company Size before Layoffs (tech layoffs til 2025.csv)"'
+
+  laid_off__tech_layoffs_til_2025_csv_:
+    sql: '"Laid Off (tech layoffs til 2025.csv)"'
+
+  latitude__tech_layoffs_til_2025_csv_:
+    sql: '"Latitude (Tech Layoffs Til 2025.Csv)"'
+
+  longitude__tech_layoffs_til_2025_csv_:
+    sql: '"Longitude (Tech Layoffs Til 2025.Csv)"'
+
+  money_raised_in__mil__tech_layoffs_til_2025_csv_:
+    sql: '"Money_Raised_in__mil (tech_layoffs_til_2025.csv)"'
+
+  nr__tech_layoffs_til_2025_csv_:
+    sql: '"Nr (tech layoffs til 2025.csv)"'
+
+  percentage__tech_layoffs_til_2025_csv_:
+    sql: '"Percentage (tech layoffs til 2025.csv)"'
+
+measures:
+  count:
+    aggregate_type: count

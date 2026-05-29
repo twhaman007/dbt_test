@@ -1,0 +1,30 @@
+# Reference this view as ecommerce_db_public__layoffs_location_with_coordinates
+catalog: ECOMMERCE_DB
+schema: PUBLIC
+table_name: LAYOFFS_LOCATION_WITH_COORDINATES
+
+dimensions:
+  continent__layoffs_location_with_coordinates_csv_:
+    sql: '"Continent (layoffs location with coordinates.csv)"'
+
+  country__layoffs_location_with_coordinates_csv_:
+    sql: '"Country (layoffs location with coordinates.csv)"'
+
+  location_hq:
+    sql: '"LOCATION_HQ"'
+
+  region__layoffs_location_with_coordinates_csv_:
+    sql: '"Region (layoffs location with coordinates.csv)"'
+
+  state:
+    sql: '"STATE"'
+
+  latitude__layoffs_location_with_coordinates_csv_:
+    sql: '"Latitude (Layoffs Location With Coordinates.Csv)"'
+
+  longitude__layoffs_location_with_coordinates_csv_:
+    sql: '"Longitude (Layoffs Location With Coordinates.Csv)"'
+
+measures:
+  count:
+    aggregate_type: count
