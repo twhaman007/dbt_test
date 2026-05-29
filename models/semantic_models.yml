@@ -1,0 +1,99 @@
+version: 2
+
+models:
+  - name: time_spine_daily
+    description: "Daily time spine for MetricFlow"
+    config:
+      materialized: table
+    time_spine:
+      standard_granularity_column: date_day
+    columns:
+      - name: date_day
+        description: "The date"
+        granularity: day
+
+semantic_models:
+  # 1. Customers Semantic Model
+  - name: customers_semantic
+    model: ref('stg_customers')
+    entities:
+      - name: customer
+        type: primary
+        expr: customer_id
+    dimensions:
+      - name: first_name
+        type: categorical
+      - name: last_name
+        type: categorical
+
+  # 2. Products Semantic Model
+  - name: products_semantic
+    model: ref('stg_products')
+    entities:
+      - name: product
+        type: primary
+        expr: product_id
+    dimensions:
+      - name: product_name
+        type: categorical
+      - name: price
+        type: categorical
+
+  # 3. Orders Fact Semantic Model
+  - name: fct_orders_semantic
+    model: ref('fct_orders')
+    defaults:
+      agg_time_dimension: order_date
+    entities:
+      - name: order_id
+        type: primary
+      - name: customer
+        type: foreign
+        expr: customer_id
+      - name: product
+        type: foreign
+        expr: product_id
+    measures:
+      - name: total_order_amount
+        description: "The total value of orders"
+        expr: order_amount
+        agg: sum
+      - name: total_quantity
+        description: "The total number of product units ordered"
+        expr: quantity
+        agg: sum
+      - name: order_count
+        description: "The total count of orders placed"
+        expr: 1
+        agg: sum
+    dimensions:
+      - name: order_date
+        type: time
+        type_params:
+          time_granularity: day
+
+metrics:
+  # 1. Revenue Metric
+  - name: total_revenue
+    label: Total Revenue
+    description: "Sum of all order values"
+    type: simple
+    type_params:
+      measure: total_order_amount
+
+  # 2. Orders Volume Metric
+  - name: order_volume
+    label: Order Volume
+    description: "Total count of orders"
+    type: simple
+    type_params:
+      measure: order_count
+
+  # 3. Average Order Value (AOV) - Derived Metric
+  - name: average_order_value
+    label: Average Order Value
+    description: "Average revenue per order"
+    type: ratio
+    type_params:
+      numerator: total_revenue
+      denominator: order_volume
