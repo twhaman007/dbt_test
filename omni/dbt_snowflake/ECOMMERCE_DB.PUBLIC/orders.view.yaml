@@ -8,23 +8,6 @@ dimensions:
     sql: '"ORDER_ID"'
     format: ID
 
-  customer_id:
-    sql: '"CUSTOMER_ID"'
-    format: ID
-
-  product_id:
-    sql: '"PRODUCT_ID"'
-    format: ID
-
-  quantity:
-    sql: '"QUANTITY"'
-
-  order_date:
-    sql: '"ORDER_DATE"'
-
-  status:
-    sql: '"STATUS"'
-
 measures:
   count:
     aggregate_type: count
