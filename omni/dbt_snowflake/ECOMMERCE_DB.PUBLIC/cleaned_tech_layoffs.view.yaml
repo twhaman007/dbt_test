@@ -7,6 +7,90 @@ dimensions:
   company:
     sql: '"COMPANY"'
 
+  continent:
+    sql: '"CONTINENT"'
+
+  country:
+    sql: '"COUNTRY"'
+
+  date_layoffs:
+    sql: '"DATE_LAYOFFS"'
+
+  funding_category:
+    sql: '"FUNDING_CATEGORY"'
+
+  industry:
+    sql: '"INDUSTRY"'
+
+  layoff_month_name:
+    sql: '"LAYOFF_MONTH_NAME"'
+
+  layoff_quarter:
+    sql: '"LAYOFF_QUARTER"'
+
+  layoff_severity_category:
+    sql: '"LAYOFF_SEVERITY_CATEGORY"'
+
+  location_hq:
+    sql: '"LOCATION_HQ"'
+
+  month:
+    sql: '"MONTH"'
+
+  region:
+    sql: '"REGION"'
+
+  risk_category:
+    sql: '"RISK_CATEGORY"'
+
+  stage:
+    sql: '"STAGE"'
+
+  us_state:
+    sql: '"US_STATE"'
+
+  year:
+    sql: '"YEAR"'
+
+  company_size_after_layoffs:
+    sql: '"COMPANY_SIZE_AFTER_LAYOFFS"'
+
+  company_size_before_layoffs:
+    sql: '"COMPANY_SIZE_BEFORE_LAYOFFS"'
+
+  company_size_loss:
+    sql: '"COMPANY_SIZE_LOSS"'
+
+  laid_off:
+    sql: '"LAID_OFF"'
+
+  latitude:
+    sql: '"LATITUDE"'
+
+  layoff_rate:
+    sql: '"LAYOFF_RATE"'
+
+  longitude:
+    sql: '"LONGITUDE"'
+
+  money_raised_in__mil:
+    sql: '"MONEY_RAISED_IN__MIL"'
+
+  nr:
+    sql: '"NR"'
+
+  percentage:
+    sql: '"PERCENTAGE"'
+
+  remaining_workforce__:
+    sql: '"Remaining Workforce %"'
+
+  risk_score:
+    sql: '"RISK_SCORE"'
+
+  workforce_survival_rate:
+    sql: '"WORKFORCE_SURVIVAL_RATE"'
+
 measures:
   count:
     aggregate_type: count
