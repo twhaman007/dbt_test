@@ -1,1 +1,6 @@
-models/omni/**
+models/*.view.yaml
+models/**/*.view.yaml
+models/*.topic.yaml
+models/**/*.topic.yaml
+models/relationships.yaml
+models/model.yaml
