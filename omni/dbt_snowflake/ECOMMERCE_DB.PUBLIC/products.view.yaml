@@ -14,12 +14,6 @@ dimensions:
   category:
     sql: '"CATEGORY"'
 
-  price:
-    sql: '"PRICE"'
-
-  stock_quantity:
-    sql: '"STOCK_QUANTITY"'
-
 measures:
   count:
     aggregate_type: count
