@@ -1,0 +1,81 @@
+# Reference this view as ecommerce_db_public__social_media_advertising
+catalog: ECOMMERCE_DB
+schema: PUBLIC
+table_name: SOCIAL_MEDIA_ADVERTISING
+
+dimensions:
+  "0": {}
+
+  campaign_goal:
+    sql: '"CAMPAIGN_GOAL"'
+
+  campaign_id:
+    sql: '"CAMPAIGN_ID"'
+    format: ID
+
+  channel_used:
+    sql: '"CHANNEL_USED"'
+
+  company:
+    sql: '"COMPANY"'
+
+  conv_rate_legend_label:
+    sql: '"CONV_RATE_LEGEND_LABEL"'
+
+  customer_segment:
+    sql: '"CUSTOMER_SEGMENT"'
+
+  date:
+    sql: '"DATE"'
+
+  date__week_:
+    sql: '"Date (week)"'
+
+  duration:
+    sql: '"DURATION"'
+
+  language:
+    sql: '"LANGUAGE"'
+
+  location:
+    sql: '"LOCATION"'
+
+  roi_legend_label:
+    sql: '"ROI_LEGEND_LABEL"'
+
+  target_audience:
+    sql: '"TARGET_AUDIENCE"'
+
+  acquisition_cost:
+    sql: '"ACQUISITION_COST"'
+
+  clicks:
+    sql: '"CLICKS"'
+
+  conversion_rate:
+    sql: '"CONVERSION_RATE"'
+
+  crt:
+    sql: '"CRT"'
+
+  engagement_score:
+    sql: '"ENGAGEMENT_SCORE"'
+
+  health_bar_max:
+    sql: '"HEALTH_BAR_MAX"'
+
+  impressions:
+    sql: '"IMPRESSIONS"'
+
+  roi:
+    sql: '"ROI"'
+
+  segment_conv__:
+    sql: '"Segment Conv %"'
+
+  segment_label:
+    sql: '"SEGMENT_LABEL"'
+
+measures:
+  count:
+    aggregate_type: count

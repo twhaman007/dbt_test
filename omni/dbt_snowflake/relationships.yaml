@@ -1,0 +1,31 @@
+# Relationship is defined in the 'fct_orders_semantic' dbt semantic model (models/semantic_models.yml)
+- join_from_view: ecommerce_db_dbt_akumar__fct_orders
+  join_to_view: ecommerce_db_dbt_akumar__stg_customers
+  join_type: always_left
+  on_sql: ${ecommerce_db_dbt_akumar__fct_orders._entity_customer} =
+    ${ecommerce_db_dbt_akumar__stg_customers._entity_customer}
+  relationship_type: assumed_many_to_one
+
+# Relationship is defined in the 'fct_orders_semantic' dbt semantic model (models/semantic_models.yml)
+- join_from_view: ecommerce_db_dbt_akumar__fct_orders
+  join_to_view: ecommerce_db_dbt_akumar__stg_products
+  join_type: always_left
+  on_sql: ${ecommerce_db_dbt_akumar__fct_orders._entity_product} =
+    ${ecommerce_db_dbt_akumar__stg_products._entity_product}
+  relationship_type: assumed_many_to_one
+
+# Relationship is defined in the 'fct_orders_semantic' dbt semantic model (models/semantic_models.yml)
+- join_from_view: omni_dbt__fct_orders
+  join_to_view: omni_dbt__stg_customers
+  join_type: always_left
+  on_sql: ${omni_dbt__fct_orders._entity_customer} =
+    ${omni_dbt__stg_customers._entity_customer}
+  relationship_type: assumed_many_to_one
+
+# Relationship is defined in the 'fct_orders_semantic' dbt semantic model (models/semantic_models.yml)
+- join_from_view: omni_dbt__fct_orders
+  join_to_view: omni_dbt__stg_products
+  join_type: always_left
+  on_sql: ${omni_dbt__fct_orders._entity_product} =
+    ${omni_dbt__stg_products._entity_product}
+  relationship_type: assumed_many_to_one
