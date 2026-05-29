@@ -19,6 +19,12 @@ dimensions:
   quantity:
     sql: '"QUANTITY"'
 
+  order_date:
+    sql: '"ORDER_DATE"'
+
+  status:
+    sql: '"STATUS"'
+
 measures:
   count:
     aggregate_type: count
