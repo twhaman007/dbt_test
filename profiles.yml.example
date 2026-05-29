@@ -1,0 +1,13 @@
+dbt_test:
+  outputs:
+    dev:
+      type: snowflake
+      account: <your_snowflake_account_locator> # e.g. xy12345.us-east-1
+      user: <your_username>
+      password: <your_password>
+      warehouse: <your_warehouse>
+      database: ECOMMERCE_DB
+      schema: <your_schema> # e.g. DBT_AKUMAR
+      threads: 4
+      client_session_keep_alive: False
+  target: dev
