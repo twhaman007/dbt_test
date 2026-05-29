@@ -1,0 +1,12 @@
+# Reference this view as ecommerce_db_public__time_spine_daily
+catalog: ECOMMERCE_DB
+schema: PUBLIC
+table_name: TIME_SPINE_DAILY
+
+dimensions:
+  date_day:
+    sql: '"DATE_DAY"'
+
+measures:
+  count:
+    aggregate_type: count

@@ -1,0 +1,4 @@
+# this is the ecommerce_db_dbt_akumar__fct_orders topic
+joins:
+  ecommerce_db_dbt_akumar__stg_customers: {}
+  ecommerce_db_dbt_akumar__stg_products: {}

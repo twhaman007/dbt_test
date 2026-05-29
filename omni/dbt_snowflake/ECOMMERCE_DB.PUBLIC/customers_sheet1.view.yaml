@@ -1,0 +1,29 @@
+# Reference this view as ecommerce_db_public__customers_sheet1
+catalog: ECOMMERCE_DB
+schema: PUBLIC
+table_name: CUSTOMERS_SHEET1
+
+dimensions:
+  customer_id:
+    sql: '"CUSTOMER_ID"'
+    format: ID
+
+  customer_name:
+    sql: '"CUSTOMER_NAME"'
+
+  segment:
+    sql: '"SEGMENT"'
+
+  region_id:
+    sql: '"REGION_ID"'
+    format: ID
+
+  city:
+    sql: '"CITY"'
+
+  signup_date:
+    sql: '"SIGNUP_DATE"'
+
+measures:
+  count:
+    aggregate_type: count
