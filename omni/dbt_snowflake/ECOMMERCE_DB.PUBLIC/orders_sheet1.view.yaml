@@ -1,0 +1,51 @@
+# Reference this view as ecommerce_db_public__orders_sheet1
+catalog: ECOMMERCE_DB
+schema: PUBLIC
+table_name: ORDERS_SHEET1
+
+dimensions:
+  order_id:
+    sql: '"ORDER_ID"'
+    format: ID
+
+  customer_id:
+    sql: '"CUSTOMER_ID"'
+    format: ID
+
+  product_id:
+    sql: '"PRODUCT_ID"'
+    format: ID
+
+  order_date:
+    sql: '"ORDER_DATE"'
+
+  status:
+    sql: '"STATUS"'
+
+  channel:
+    sql: '"CHANNEL"'
+
+  quantity:
+    sql: '"QUANTITY"'
+
+  unit_price:
+    sql: '"UNIT_PRICE"'
+
+  discount:
+    sql: '"DISCOUNT"'
+
+  revenue:
+    sql: '"REVENUE"'
+
+  cost:
+    sql: '"COST"'
+
+  profit:
+    sql: '"PROFIT"'
+
+  region:
+    sql: '"REGION"'
+
+measures:
+  count:
+    aggregate_type: count
