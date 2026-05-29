@@ -13,78 +13,114 @@ models:
         granularity: day
 
   - name: stg_customers
-    semantic_model:
-      enabled: true
-      name: stg_customers
     columns:
       - name: customer_id
-        entity:
-          type: primary
-          name: customer
-      - name: first_name
-        dimension:
-          type: categorical
-      - name: last_name
-        dimension:
-          type: categorical
+        constraints:
+          - type: primary_key
+            warn_unenforced: false
+
   - name: stg_products
-    semantic_model:
-      enabled: true
-      name: stg_products
     columns:
       - name: product_id
-        entity:
-          type: primary
-          name: product
-      - name: product_name
-        dimension:
-          type: categorical
-      - name: price
-        dimension:
-          type: categorical
+        constraints:
+          - type: primary_key
+            warn_unenforced: false
+
   - name: fct_orders
-    semantic_model:
-      enabled: true
-      name: fct_orders
-    agg_time_dimension: order_date
     columns:
       - name: order_id
-        entity:
-          type: primary
+        constraints:
+          - type: primary_key
+            warn_unenforced: false
       - name: customer_id
-        entity:
-          type: foreign
-          name: customer
+        constraints:
+          - type: foreign_key
+            to: ref('stg_customers')
+            to_columns: [customer_id]
+            warn_unenforced: false
       - name: product_id
-        entity:
-          type: foreign
-          name: product
-      - name: order_date
-        dimension:
-          type: time
-        granularity: day
-    metrics:
-      - name: total_revenue
-        label: Total Revenue
-        description: "Sum of all order values"
-        type: simple
-        agg: sum
+        constraints:
+          - type: foreign_key
+            to: ref('stg_products')
+            to_columns: [product_id]
+            warn_unenforced: false
+
+semantic_models:
+  - name: customers_semantic
+    model: ref('stg_customers')
+    entities:
+      - name: customer
+        type: primary
+        expr: customer_id
+    dimensions:
+      - name: first_name
+        type: categorical
+      - name: last_name
+        type: categorical
+
+  - name: products_semantic
+    model: ref('stg_products')
+    entities:
+      - name: product
+        type: primary
+        expr: product_id
+    dimensions:
+      - name: product_name
+        type: categorical
+      - name: price
+        type: categorical
+
+  - name: fct_orders_semantic
+    model: ref('fct_orders')
+    defaults:
+      agg_time_dimension: order_date
+    entities:
+      - name: order_id
+        type: primary
+      - name: customer
+        type: foreign
+        expr: customer_id
+      - name: product
+        type: foreign
+        expr: product_id
+    measures:
+      - name: total_order_amount
+        description: "The total value of orders"
         expr: order_amount
-      - name: order_volume
-        label: Order Volume
-        description: "Total count of orders"
-        type: simple
         agg: sum
-        expr: 1
       - name: total_quantity
         description: "The total number of product units ordered"
         expr: quantity
         agg: sum
-        type: simple
-        hidden: true
-      - name: average_order_value
-        label: Average Order Value
-        description: "Average revenue per order"
-        type: ratio
-        numerator: total_revenue
-        denominator: order_volume
+      - name: order_count
+        description: "The total count of orders placed"
+        expr: 1
+        agg: sum
+    dimensions:
+      - name: order_date
+        type: time
+        type_params:
+          time_granularity: day
+
+metrics:
+  - name: total_revenue
+    label: Total Revenue
+    description: "Sum of all order values"
+    type: simple
+    type_params:
+      measure: total_order_amount
+
+  - name: order_volume
+    label: Order Volume
+    description: "Total count of orders"
+    type: simple
+    type_params:
+      measure: order_count
+
+  - name: average_order_value
+    label: Average Order Value
+    description: "Average revenue per order"
+    type: ratio
+    type_params:
+      numerator: total_revenue
+      denominator: order_volume
