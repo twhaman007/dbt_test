@@ -1,0 +1,845 @@
+# Reference this view as ri_csp_clean
+catalog: ECOMMERCE_DB
+schema: PUBLIC
+
+dimensions:
+  cloud:
+    sql: '"cloud"'
+    label: Cloud
+
+  purchasetype:
+    sql: '"purchasetype"'
+    label: Purchase Type
+
+  payergroup:
+    sql: '"payergroup"'
+    label: Payer Group
+
+  purchaseaccountname:
+    sql: '"purchaseaccountname"'
+    label: Purchase Account Name
+
+  purchaseaccountid:
+    sql: '"purchaseaccountid"'
+    label: Purchase Account ID
+
+  scope:
+    sql: '"scope"'
+    label: Scope
+
+  hourlycommit_raw:
+    sql: '"hourlycommit"'
+    label: Hourly Commit (Raw)
+    hidden: true
+
+  startdate:
+    sql: '"startdate"'
+    label: Start Date
+    timeframes: [ raw, date, week, month, quarter, year ]
+
+  enddate:
+    sql: '"enddate"'
+    label: End Date
+    timeframes: [ raw, date, week, month, quarter, year ]
+
+  reservationtype:
+    sql: '"reservationtype"'
+    label: Reservation Type
+
+  family:
+    sql: '"family"'
+    label: Family
+
+  region:
+    sql: '"region"'
+    label: Region
+
+  annualcost_raw:
+    sql: '"annualcost"'
+    label: Annual Cost (Raw)
+    hidden: true
+
+  status:
+    sql: '"status"'
+    label: Status
+
+  key:
+    sql: '"key"'
+    label: Key
+
+  name:
+    sql: '"name"'
+    label: Name
+
+  dateloaded:
+    sql: '"dateloaded"'
+    label: Date Loaded
+    timeframes: [ raw, date, week, month, quarter, year ]
+
+  renewal_date:
+    sql: '"renewal_date"'
+    label: Renewal Date
+    timeframes: [ raw, date, week, month, quarter, year ]
+
+  renewaltimeperiod_csp:
+    sql: '"renewaltimeperiod_csp"'
+    label: RenewalTimePeriod CSP
+
+  instancecount_raw:
+    sql: '"instancecount"'
+    label: Instance Count (Raw)
+    hidden: true
+
+  discount_raw:
+    sql: '"discount"'
+    label: Discount% (Raw)
+    hidden: true
+
+  purchaseexpectedsaving_raw:
+    sql: '"purchaseexpectedsaving"'
+    label: Purchase Expected Saving (Raw)
+    hidden: true
+
+  purchasecost_raw:
+    sql: '"purchasecost"'
+    label: Purchase Cost (Raw)
+    hidden: true
+
+  newtotalproductcoverage_raw:
+    sql: '"newtotalproductcoverage"'
+    label: newTotalProductCoverage% (Raw)
+    hidden: true
+
+  purchaseticketid:
+    sql: '"purchaseticketid"'
+    label: Purchase Ticket ID
+
+  asset_link:
+    sql: '"asset_link"'
+    label: Asset Link
+
+  global_sum_purchaseexpectedsaving:
+    sql: omni_dimensionalize(${purchaseexpectedsaving})
+    label: Global SUM Purchaseexpectedsaving
+    hidden: true
+    level_of_detail:
+      aggregate_type: sum
+      fixed: []
+      cancel_query_filters: true
+
+  global_sum_annualcost:
+    sql: omni_dimensionalize(${annualcost})
+    label: Global SUM Annualcost
+    hidden: true
+    level_of_detail:
+      aggregate_type: sum
+      fixed: []
+      cancel_query_filters: true
+
+  global_weighted_savings_rate_lod_benchmark:
+    sql: ${global_sum_purchaseexpectedsaving} / NULLIF(${global_sum_annualcost}, 0)
+    label: Global Weighted Savings Rate (LOD Benchmark)
+    format: percent_2
+    description: "LOD math decomposed from Tableau formula. Original: { FIXED :
+      SUM([purchaseExpectedSaving]) } / { FIXED : SUM([annualCost]) }"
+
+  purchasecoverageincrease_raw:
+    sql: '"purchasecoverageincrease"'
+    label: purchaseCoverageIncrease% (Raw)
+    hidden: true
+
+  reservation_aging_bucket:
+    sql: CASE WHEN DATEDIFF('day', ${startdate}, TODAY()) <= 90 THEN '0-3 Months'
+      WHEN DATEDIFF('day', ${startdate}, TODAY()) <= 180 THEN '3-6 Months' WHEN
+      DATEDIFF('day', ${startdate}, TODAY()) <= 365 THEN '6-12 Months' ELSE '1+
+      Year' END
+    label: Reservation Aging Bucket
+
+  global_min_purchaseexpectedsaving:
+    sql: ${purchaseexpectedsaving_value}
+    label: Global MIN Purchaseexpectedsaving
+    hidden: true
+    level_of_detail:
+      aggregate_type: min
+      fixed: []
+      cancel_query_filters: true
+
+  total_spend_per_cloud_fixed_lod:
+    sql: ${annualcost_value}
+    label: Total Spend Per Cloud FIXED LOD
+    description: "LOD field from Tableau: { FIXED [Cloud] : SUM([annualCost]) }"
+    level_of_detail:
+      aggregate_type: sum
+      fixed: [ cloud ]
+
+  include_lod_expression:
+    sql: ${annualcost_value}
+    label: INCLUDE LOD Expression
+    description: "LOD field from Tableau: { INCLUDE [purchaseAccountName] :\r
+
+      AVG([annualCost])\r
+
+      }"
+    level_of_detail:
+      aggregate_type: average
+      always_include: [ purchaseaccountname ]
+
+  exclude_lod_expression:
+    sql: ${annualcost_value}
+    label: EXCLUDE LOD Expression
+    description: "LOD field from Tableau: { EXCLUDE [payerGroup] :\r
+
+      SUM([annualCost])\r
+
+      }"
+    level_of_detail:
+      aggregate_type: sum
+      always_exclude: [ payergroup ]
+
+  purchaseexpectedsaving_value:
+    sql: omni_dimensionalize(${purchaseexpectedsaving})
+    label: Purchaseexpectedsaving Value
+    description: "Shared helper: dimensionalized form of purchaseexpectedsaving
+      measure for use in display-helper dimensions (arrows, colours, filters)."
+    hidden: true
+
+  annualcost_value:
+    sql: omni_dimensionalize(${annualcost})
+    label: Annualcost Value
+    description: "Shared helper: dimensionalized form of annualcost measure for use
+      in display-helper dimensions (arrows, colours, filters)."
+    hidden: true
+
+  cloud_sum_purchaseexpectedsaving:
+    sql: ${purchaseexpectedsaving_value}
+    label: Cloud SUM Purchaseexpectedsaving
+    hidden: true
+    level_of_detail:
+      aggregate_type: sum
+      fixed: [ cloud, purchaseaccountid ]
+
+  cloud_sum_annualcost:
+    sql: omni_dimensionalize(${annualcost})
+    label: Cloud SUM Annualcost
+    hidden: true
+    level_of_detail:
+      aggregate_type: sum
+      fixed: [ cloud ]
+
+  cloud_sum_purchaseexpectedsaving_2:
+    sql: ${purchaseexpectedsaving_value}
+    label: Cloud SUM Purchaseexpectedsaving
+    hidden: true
+    level_of_detail:
+      aggregate_type: sum
+      fixed: [ cloud ]
+
+  fixed_cloud_level_total_savings:
+    sql: ${purchaseexpectedsaving_value}
+    label: FIXED → Cloud-Level Total Savings
+    description: "LOD field from Tableau: { FIXED [Cloud] :\r
+
+      SUM([purchaseExpectedSaving])\r
+
+      }"
+    level_of_detail:
+      aggregate_type: sum
+      fixed: [ cloud ]
+
+  fixed_reservation_count_by_cloud:
+    sql: ${purchaseaccountid}
+    label: FIXED → Reservation Count By Cloud
+    description: "LOD field from Tableau: { FIXED [Cloud] :\r
+
+      COUNT([purchaseAccountID])\r
+
+      }"
+    level_of_detail:
+      aggregate_type: count
+      fixed: [ cloud ]
+
+  include_avg_account_savings_within_region:
+    sql: ${purchaseexpectedsaving_value}
+    label: INCLUDE → Avg Account Savings Within Region
+    description: "LOD field from Tableau: { INCLUDE [purchaseAccountName] :\r
+
+      AVG([purchaseExpectedSaving])\r
+
+      }"
+    level_of_detail:
+      aggregate_type: average
+      always_include: [ purchaseaccountname ]
+
+  calculation1include_avg_commitment_duration:
+    sql: DATEDIFF('day', ${startdate}, ${enddate})
+    label: Calculation1INCLUDE → Avg Commitment Duration
+    description: "LOD field from Tableau: { INCLUDE [purchaseAccountID] :\r
+
+      AVG(\r
+
+      DATEDIFF('day', [startDate], [endDate])\r
+
+      )\r
+
+      }"
+    level_of_detail:
+      aggregate_type: average
+      always_include: [ purchaseaccountid ]
+
+  exclude_regional_spend_ignoring_cloud:
+    sql: ${annualcost_value}
+    label: " EXCLUDE → Regional Spend Ignoring Cloud"
+    description: "LOD field from Tableau: { EXCLUDE [Cloud] :\r
+
+      SUM([annualCost])\r
+
+      }"
+    level_of_detail:
+      aggregate_type: sum
+      always_exclude: [ cloud ]
+
+  exclude_spend_ignoring_payer_group:
+    sql: ${annualcost_value}
+    label: EXCLUDE → Spend Ignoring Payer Group
+    description: "LOD field from Tableau: { EXCLUDE [payerGroup] :\r
+
+      SUM([annualCost])\r
+
+      }"
+    level_of_detail:
+      aggregate_type: sum
+      always_exclude: [ payergroup ]
+
+  exclude_discount_benchmark:
+    sql: omni_dimensionalize(${discount})
+    label: EXCLUDE → Discount Benchmark
+    description: "LOD field from Tableau: { EXCLUDE [purchaseAccountName] :\r
+
+      AVG([discount%])\r
+
+      }"
+    level_of_detail:
+      aggregate_type: average
+      always_exclude: [ purchaseaccountname ]
+
+  global_max_annualcost:
+    sql: ${annualcost_value}
+    label: Global MAX Annualcost
+    hidden: true
+    level_of_detail:
+      aggregate_type: max
+      fixed: []
+      cancel_query_filters: true
+
+  forecasted_savings:
+    sql: "NULL"
+    label: Forecasted Savings
+    description: |-
+      TODO: review Tableau formula (The formula uses Tableau's LOOKUP() function, which is a row-traversal function and has no direct SQL equivalent.). Original: LOOKUP(
+      SUM([purchaseExpectedSaving]),
+      -1
+      )
+      *
+      1.1
+
+  purchasecoverageincrease:
+    sql: '"purchasecoverageincrease"'
+    label: purchaseCoverageIncrease%
+    format: number_2
+
+measures:
+  hourlycommit:
+    sql: ${hourlycommit_raw}
+    label: Hourly Commit
+    format: number_2
+    aggregate_type: sum
+
+  annualcost:
+    sql: ${annualcost_raw}
+    label: Annual Cost
+    format: number_2
+    aggregate_type: sum
+
+  instancecount:
+    sql: ${instancecount_raw}
+    label: Instance Count
+    format: number_2
+    aggregate_type: sum
+
+  discount:
+    sql: ${discount_raw}
+    label: Discount%
+    format: percent_2
+    aggregate_type: sum
+
+  purchaseexpectedsaving:
+    sql: ${purchaseexpectedsaving_raw}
+    label: Purchase Expected Saving
+    format: number_2
+    aggregate_type: sum
+
+  purchasecost:
+    sql: ${purchasecost_raw}
+    label: Purchase Cost
+    format: number_2
+    aggregate_type: sum
+
+  newtotalproductcoverage:
+    sql: ${newtotalproductcoverage_raw}
+    label: newTotalProductCoverage%
+    format: number_2
+    aggregate_type: sum
+
+  savings_to_spend_efficiency_ratio:
+    sql: omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${annual_cost}) -
+      omni_dimensionalize(${purchase_expected_saving}), 0)
+    label: Savings-to-Spend Efficiency Ratio
+    format: percent_2
+
+  commitment_status_risk_metrics:
+    sql: SUM(CASE WHEN ${status} = 'Expired' OR ${status} = 'Closed' OR ${status} =
+      'Canceled' THEN ${purchase_expected_saving} ELSE 0 END)
+    label: Commitment Status & Risk Metrics
+    format: number_2
+
+  status_weighted_cost_leakage_rate:
+    sql: SUM(CASE WHEN ${status} != 'Active' THEN ${purchase_expected_saving} ELSE 0
+      END) / NULLIF(omni_dimensionalize(${purchase_expected_saving}), 0)
+    label: " Status-Weighted Cost Leakage Rate"
+    format: percent_2
+
+  payer_group_savings_efficiency_index_lod:
+    sql: |-
+      (SUM(${purchaseexpectedsaving_raw}) / SUM(${annualcost_raw}))
+      /
+      MIN(${global_sum_purchaseexpectedsaving} / NULLIF(${global_sum_annualcost}, 0))
+    label: Payer Group Savings Efficiency Index (LOD)
+    format: number_2
+
+  portfolio_savings_intensity_score_composite_finops_index:
+    sql: ((SUM(CASE WHEN ${status} = 'Active' THEN ${annual_cost} ELSE 0 END) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)) * 40) + (CASE WHEN
+      (omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)) / 0.40 > 1.0 THEN 1.0 ELSE
+      (omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)) / 0.40 END * 40) +
+      ((SUM(CASE WHEN ${status} = 'Active' AND DATEDIFF(day, CAST(${date_loaded}
+      AS DATE), CAST(${renewal_date} AS DATE)) > 90 THEN ${annual_cost} ELSE 0
+      END) / NULLIF(omni_dimensionalize(${annual_cost}), 0)) * 20)
+    label: " Portfolio Savings Intensity Score (Composite FinOps Index)"
+    format: number_2
+
+  portfolio_decay_index_expired_to_active_ratio:
+    sql: SUM(CASE WHEN ${status} = 'Expired' THEN ${annual_cost} ELSE 0 END) /
+      NULLIF(SUM(CASE WHEN ${status} = 'Active' THEN ${annual_cost} ELSE 0 END),
+      0)
+    label: Portfolio Decay Index (Expired-to-Active Ratio)
+    format: percent_2
+
+  scope_based_decentralization_ratio:
+    sql: SUM(CASE WHEN ${scope} != 'Global' THEN ${annual_cost} ELSE 0 END) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)
+    label: Scope-Based Decentralization Ratio
+    format: percent_2
+
+  near_term_renewal_concentration_risk:
+    sql: SUM(CASE WHEN ${status} = 'Active' AND DATEDIFF('day',
+      DATE(${date_loaded}), DATE(${renewal_date})) <= 30 THEN ${annual_cost}
+      ELSE 0 END) / NULLIF(SUM(CASE WHEN ${status} = 'Active' THEN
+      ${annual_cost} ELSE 0 END), 0)
+    label: Near-Term Renewal Concentration Risk
+    format: number_2
+
+  annualized_saving_rate_per_dollar_of_hourly_commit:
+    sql: CASE WHEN omni_dimensionalize(${hourly_commit}) > 0 THEN
+      omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${hourly_commit}), 0) ELSE NULL END
+    label: Annualized Saving Rate Per Dollar of Hourly Commit
+    format: percent_2
+
+  purchasecoverageincrease:
+    sql: ${purchasecoverageincrease_raw}
+    label: purchaseCoverageIncrease%
+    format: number_2
+    aggregate_type: sum
+
+  net_savings_efficiency:
+    sql: omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)
+    label: Net Savings Efficiency
+    format: number_2
+
+  weighted_average_discount:
+    sql: SUM(${annual_cost} * ${discount_percent}) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)
+    label: Weighted Average Discount
+    format: percent_2
+
+  remaining_commitment_days:
+    sql: DATEDIFF('day', CURRENT_DATE, ${end_date})
+    label: Remaining Commitment Days
+    format: number_0
+    aggregate_type: sum
+
+  commitment_utilization_risk_score:
+    sql: CASE WHEN DATEDIFF('day', TODAY(), ${enddate}) < 30 THEN ${annualcost_raw}
+      * 0.8 WHEN DATEDIFF('day', TODAY(), ${enddate}) < 90 THEN
+      ${annualcost_raw} * 0.5 ELSE ${annualcost_raw} * 0.2 END
+    label: Commitment Utilization Risk Score
+    format: number_2
+    aggregate_type: sum
+
+  monthly_burn_rate:
+    sql: omni_dimensionalize(${annual_cost}) / 12
+    label: Monthly Burn Rate
+    format: percent_2
+
+  reservation_coverage_growth:
+    sql: ${purchasecoverageincrease}
+    label: Reservation Coverage Growth
+    format: percent_2
+
+  effective_savings_per_hour:
+    sql: omni_dimensionalize(${purchase_expected_saving}) /
+      (omni_dimensionalize(${hourly_commit}) * 24 * 365)
+    label: Effective Savings Per Hour
+    format: number_2
+
+  active_reservation_count:
+    sql: COUNT(CASE WHEN ${status} = 'Active' THEN ${purchase_account_id} END)
+    label: Active Reservation Count
+    format: number_0
+
+  expiring_in_next_90_days:
+    sql: COUNT(CASE WHEN DATEDIFF('day', CURRENT_DATE, ${end_date}) <= 90 AND
+      DATEDIFF('day', CURRENT_DATE, ${end_date}) >= 0 THEN
+      ${purchase_account_id} END)
+    label: Expiring In Next 90 Days
+    format: number_0
+
+  expired_reservation_cost_exposure:
+    sql: SUM(CASE WHEN ${renewaltimeperiod_csp} = 'Overdue' THEN ${annualcost_raw}
+      END)
+    label: Expired Reservation Cost Exposure
+    format: usdcurrency_2
+
+  cloud_wise_savings_ratio:
+    sql: ${purchaseexpectedsaving} / NULLIF(${global_sum_purchaseexpectedsaving}, 0)
+    label: Cloud Wise Savings Ratio
+    format: percent_2
+
+  commitment_density:
+    sql: omni_dimensionalize(${hourly_commit}) / COUNT(DISTINCT
+      ${purchase_account_id})
+    label: Commitment Density
+    format: number_2
+
+  reservation_duration_years:
+    sql: DATEDIFF('month', ${start_date}, ${end_date}) / 12
+    label: Reservation Duration (Years)
+    format: number_2
+    aggregate_type: sum
+
+  annualized_savings_percentage:
+    sql: omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${annual_cost}) +
+      omni_dimensionalize(${purchase_expected_saving}), 0)
+    label: Annualized Savings Percentage
+    format: number_2
+
+  renewal_urgency_index:
+    sql: CASE WHEN DATEDIFF('day', TODAY(), ${enddate}) <= 30 THEN 5 WHEN
+      DATEDIFF('day', TODAY(), ${enddate}) <= 60 THEN 4 WHEN DATEDIFF('day',
+      TODAY(), ${enddate}) <= 90 THEN 3 WHEN DATEDIFF('day', TODAY(),
+      ${enddate}) <= 180 THEN 2 ELSE 1 END
+    label: Renewal Urgency Index
+    format: number_0
+    aggregate_type: sum
+
+  commitment_concentration_ratio:
+    sql: omni_dimensionalize(${annual_cost}) /
+      NULLIF(omni_dimensionalize(${annual_cost}) OVER (), 0)
+    label: Commitment Concentration Ratio
+    format: percent_2
+
+  savings_volatility_index:
+    sql: (STDDEV(omni_dimensionalize(${purchase_expected_saving})) OVER ())
+    label: Savings Volatility Index
+    format: number_2
+
+  region_wise_efficiency_score:
+    sql: omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)
+    label: Region Wise Efficiency Score
+    format: number_2
+
+  reservation_portfolio_health_score:
+    sql: ((omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)) * 0.4 +
+      (AVG(${discount_percent}) * 0.3) +
+      (AVG(${purchase_coverage_increase_percent}) * 0.3))
+    label: Reservation Portfolio Health Score
+    format: number_2
+
+  cloud_provider_risk_diversification:
+    sql: COUNT(DISTINCT ${cloud}) / NULLIF(COUNT(DISTINCT ${purchase_account_id}),
+      0)
+    label: Cloud Provider Risk Diversification
+    format: number_2
+
+  commitment_expiry_forecast:
+    sql: ${commitment_expiry_forecast_qv.commitment_expiry_forecast}
+    label: Commitment Expiry Forecast
+    format: number_2
+    description: "Migrated from Tableau TABLE_CALC_RUNNING. See
+      commitment_expiry_forecast_qv.query.view for the SQL window-function
+      implementation. Original Tableau formula: RUNNING_SUM(\r
+
+      IF DATEDIFF('day', TODAY(), [endDate]) <= 365 THEN\r
+
+      \    [annualCos"
+
+  dynamic_cagr_of_savings:
+    sql: |-
+      (
+      POWER(
+      ${purchaseexpectedsaving} / ${global_min_purchaseexpectedsaving},
+      1 / COUNTD(YEAR(${startdate}))
+      ) - 1
+      )
+    label: Dynamic CAGR of Savings
+    format: number_2
+
+  active_commitment_lifespan_progress:
+    sql: CASE WHEN ${status} = 'Active' AND DATEDIFF(day, CAST(${start_date} AS
+      DATE), CAST(${end_date} AS DATE)) > 0 THEN DATEDIFF(day,
+      CAST(${start_date} AS DATE), CAST(${date_loaded} AS DATE)) /
+      NULLIF(DATEDIFF(day, CAST(${start_date} AS DATE), CAST(${end_date} AS
+      DATE)), 0) ELSE NULL END
+    label: Active Commitment Lifespan Progress %
+    format: number_2
+    aggregate_type: sum
+
+  monthly_run_rate_savings_gain:
+    sql: SUM(CASE WHEN DATEDIFF('day', DATE(${start_date}), DATE(${date_loaded})) <=
+      30 AND ${status} = 'Active' THEN ${purchase_expected_saving} / 12 ELSE 0
+      END)
+    label: Monthly Run-Rate Savings Gain
+    format: percent_2
+
+  commitment_coverage_target_gap_cloud_specific_lod:
+    sql: AVG(${new_total_product_coverage_percent}) - MIN(CASE ${cloud} WHEN 'AWS'
+      THEN 0.75 WHEN 'Azure' THEN 0.80 WHEN 'GCP' THEN 0.70 ELSE 0.75 END)
+    label: Commitment Coverage Target Gap (Cloud-Specific LOD)
+    format: percent_2
+
+  payer_group_savings_variance_delta_lod:
+    sql: |-
+      (SUM(${purchaseexpectedsaving_raw}) / SUM(${annualcost_raw})) - 
+      (
+        ${cloud_sum_purchaseexpectedsaving} 
+        / NULLIF(${cloud_sum_annualcost}, 0)
+      )
+    label: " Payer Group Savings Variance Delta (LOD)"
+    format: number_2
+
+  multi_account_savings_concentration_hhi_of_savings:
+    sql: |-
+      SUM(
+        SQUARE(
+          ${cloud_sum_purchaseexpectedsaving} 
+          / NULLIF(${cloud_sum_purchaseexpectedsaving_2}, 0)
+        )
+      )
+    label: Multi-Account Savings Concentration (HHI of Savings)
+    format: number_2
+
+  financial_return_amortization:
+    sql: CASE WHEN omni_dimensionalize(${purchase_expected_saving}) > 0 THEN
+      SUM(COALESCE(${purchase_cost}, 0)) /
+      NULLIF(omni_dimensionalize(${purchase_expected_saving}), 0) ELSE NULL END
+    label: Financial Return & Amortization
+    format: number_2
+
+  wasted_spend_impact_index:
+    sql: SUM(CASE WHEN ${status} = 'Expired' OR ${status} = 'Closed' THEN
+      ${annual_cost} ELSE 0 END) / NULLIF(SUM(CASE WHEN ${status} = 'Active'
+      THEN ${annual_cost} ELSE 0 END) - SUM(CASE WHEN ${status} = 'Active' THEN
+      ${purchase_expected_saving} ELSE 0 END), 0)
+    label: Wasted Spend Impact Index
+    format: usdcurrency_2
+
+  target_savings_achievement_rate:
+    sql: (omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${annual_cost}), 0)) / 0.40
+    label: Target Savings Achievement Rate %
+    format: percent_2
+
+  instance_count_efficiency_index:
+    sql: CASE WHEN omni_dimensionalize(${instance_count}) > 0 THEN
+      omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${instance_count}), 0) ELSE NULL END
+    label: Instance Count Efficiency Index
+    format: number_0
+
+  incremental_coverage_elasticity_proxy:
+    sql: AVG(${purchase_coverage_increase_percent}) /
+      NULLIF(AVG(${discount_percent}), 0)
+    label: Incremental Coverage Elasticity Proxy
+    format: percent_2
+
+  commitment_efficiency_ratio:
+    sql: omni_dimensionalize(${purchase_expected_saving}) /
+      NULLIF(omni_dimensionalize(${hourly_commit}), 0)
+    label: Commitment Efficiency Ratio
+    format: percent_2
+
+  weighted_commitment_score:
+    sql: ((omni_dimensionalize(${annual_cost}) * AVG(${discount_percent})) /
+      NULLIF(omni_dimensionalize(${hourly_commit}), 0))
+    label: Weighted Commitment Score
+    format: number_2
+
+  reservation_stress_index:
+    sql: ((COUNT(CASE WHEN DATEDIFF('day', CURRENT_DATE, ${end_date}) <= 30 THEN 1
+      END) / NULLIF(COUNT(${purchase_account_id}), 0)) * 100)
+    label: Reservation Stress Index
+    format: number_2
+
+  savings_momentum:
+    sql: ${savings_momentum_qv.savings_momentum}
+    label: Savings Momentum
+    format: number_2
+    description: "Migrated from Tableau TABLE_CALC_RUNNING. See
+      savings_momentum_qv.query.view for the SQL window-function implementation.
+      Original Tableau formula: RUNNING_SUM(SUM([purchaseExpectedSaving]))"
+
+  cost_burn_velocity:
+    sql: ${cost_burn_velocity_qv.cost_burn_velocity}
+    label: Cost Burn Velocity
+    format: usdcurrency_2
+    description: "Migrated from Tableau TABLE_CALC_WINDOW. See
+      cost_burn_velocity_qv.query.view for the SQL window-function
+      implementation. Original Tableau formula: WINDOW_AVG(SUM([annualCost]),
+      -3, 0)"
+
+  optimization_variance:
+    sql: (STDDEV(omni_dimensionalize(${purchase_expected_saving})) OVER ())
+    label: Optimization Variance
+    format: number_2
+
+  reservation_saturation_ratio:
+    sql: omni_dimensionalize(${hourly_commit}) /
+      NULLIF(omni_dimensionalize(${purchase_coverage_increase_percent}), 0)
+    label: Reservation Saturation Ratio
+    format: percent_2
+
+  multi_cloud_diversification_score:
+    sql: COUNT(DISTINCT ${cloud}) / NULLIF(COUNT(DISTINCT ${purchase_account_name}),
+      0)
+    label: Multi-Cloud Diversification Score
+    format: number_2
+
+  commitment_aging_factor:
+    sql: AVG(DATEDIFF('day', ${start_date}, CURRENT_DATE))
+    label: Commitment Aging Factor
+    format: number_2
+
+  dynamic_risk_exposuresum_if_datediff_day_today_enddate_90then_annualcost_end_sum_annualcost:
+    sql: SUM(CASE WHEN DATEDIFF('day', CURRENT_DATE, ${end_date}) <= 90 THEN
+      ${annual_cost} END) / NULLIF(omni_dimensionalize(${annual_cost}), 0)
+    label: Dynamic Risk ExposureSUM(IF DATEDIFF('day', TODAY(), [endDate]) <= 90THEN
+      [annualCost]END)/SUM([annualCost])
+    format: number_2
+
+  fixed_payer_group_efficiency:
+    sql: ${fixed_payer_group_efficiency_qv.fixed_payer_group_efficiency}
+    label: FIXED → Payer Group Efficiency
+    format: number_2
+    description: "Migrated from Tableau COMPLEX_HYBRID. See
+      fixed_payer_group_efficiency_qv.query.view for the SQL window-function
+      implementation. Original Tableau formula: { FIXED [payerGroup] :\r
+
+      SUM([purchaseExpectedSaving])\r
+
+      /\r
+
+      SUM([annualCost])\r
+
+      }"
+
+  pareto_contribution:
+    sql: ${pareto_contribution_qv.pareto_contribution}
+    label: Pareto Contribution %
+    format: number_2
+    description: "Migrated from Tableau TABLE_CALC_RUNNING. See
+      pareto_contribution_qv.query.view for the SQL window-function
+      implementation. Original Tableau formula: RUNNING_SUM(SUM([annualCost]))\r
+
+      /\r
+
+      TOTAL(SUM([annualCost]))"
+
+  renewal_risk_heat_score:
+    sql: CASE WHEN DATEDIFF('day', TODAY(), ${enddate}) <= 30 THEN 100 WHEN
+      DATEDIFF('day', TODAY(), ${enddate}) <= 60 THEN 75 WHEN DATEDIFF('day',
+      TODAY(), ${enddate}) <= 90 THEN 50 ELSE 10 END
+    label: Renewal Risk Heat Score
+    format: number_0
+    aggregate_type: sum
+
+  reservation_volatility_score:
+    sql: ${reservation_volatility_score_qv.reservation_volatility_score}
+    label: Reservation Volatility Score
+    format: number_2
+    description: "Migrated from Tableau TABLE_CALC_WINDOW. See
+      reservation_volatility_score_qv.query.view for the SQL window-function
+      implementation. Original Tableau formula:
+      WINDOW_STDEV(SUM([annualCost]))\r
+
+      /\r
+
+      WINDOW_AVG(SUM([annualCost]))"
+
+  cloud_dominance_index:
+    sql: |-
+      ${annualcost}
+      /
+      ${global_max_annualcost}
+    label: Cloud Dominance Index
+    format: number_2
+
+  dynamic_benchmark_score:
+    sql: ${dynamic_benchmark_score_qv.dynamic_benchmark_score}
+    label: Dynamic Benchmark Score
+    format: number_2
+    description: "Migrated from Tableau TABLE_CALC_WINDOW. See
+      dynamic_benchmark_score_qv.query.view for the SQL window-function
+      implementation. Original Tableau formula: SUM([annualCost])\r
+
+      /\r
+
+      WINDOW_AVG(SUM([annualCost]))"
+# ---- OMNITRIX MERGE NOTES ----
+#
+# Overrides — existing field won; generated version shown for reference:
+#
+#   dimension: global_sum_purchaseexpectedsaving
+#     # generated version:
+#     global_sum_purchaseexpectedsaving:
+#       sql: ${purchaseexpectedsaving_value}
+#       label: Global SUM Purchaseexpectedsaving
+#       hidden: true
+#       level_of_detail:
+#         aggregate_type: sum
+#         fixed: []
+#         cancel_query_filters: true
+#
+#   measure: purchasecoverageincrease
+#     # generated version:
+#     purchasecoverageincrease:
+#       aggregate_type: sum
+#       sql: ${purchasecoverageincrease_raw}
+#       label: purchaseCoverageIncrease%
+#       format: number_2
