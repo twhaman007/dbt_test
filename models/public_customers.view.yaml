@@ -1,5 +1,4 @@
 # Reference this view as ecommerce_db_public__customers
-label: "Public Customers View"
 catalog: ECOMMERCE_DB
 schema: PUBLIC
 table_name: CUSTOMERS
@@ -17,7 +16,6 @@ dimensions:
 
   email:
     sql: '"EMAIL"'
-    label: "Customer Email Address"
 
   city:
     sql: '"CITY"'
