@@ -14,18 +14,6 @@ dimensions:
   last_name:
     sql: '"LAST_NAME"'
 
-  email:
-    sql: '"EMAIL"'
-
-  city:
-    sql: '"CITY"'
-
-  state:
-    sql: '"STATE"'
-
-  signup_date:
-    sql: '"SIGNUP_DATE"'
-
 measures:
   count:
     aggregate_type: count
